@@ -237,6 +237,7 @@ Cbuf_Execute(void)
 		}
 
 		/* execute the command line */
+		Com_Printf("%s\n", line);
 		Cmd_ExecuteString(line);
 
 		if (cmd_wait > 0)

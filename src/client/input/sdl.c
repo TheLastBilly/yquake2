@@ -457,6 +457,24 @@ IN_Update(void)
 
 	static int consoleKeyCode = 0;
 
+	/* Evil hack working around spurious key up events when
+	   SDL_PollEvent() get's called too often. This should
+	   really get fixed upstream, because limiting calls to
+	   SDL_PollEvent() to only one call every 16 ms or less
+	   lowers our input precision. */
+	int newtime = Sys_Milliseconds();
+	static int oldtime;
+
+	if ((newtime - oldtime) <= 16)
+	{
+		sys_frame_time = Sys_Milliseconds();
+		return;
+	}
+	else
+	{
+		oldtime = newtime;
+	}
+
 	/* Get and process an event */
 	while (SDL_PollEvent(&event))
 	{
@@ -537,6 +555,9 @@ IN_Update(void)
 						key = '1' + (sc - SDL_SCANCODE_1);
 					}
 
+					// FIXME
+					Com_Printf("Key: %i, State: %i\n", key, down);
+
 					Key_Event(key, down, false);
 				}
 				else
@@ -560,6 +581,9 @@ IN_Update(void)
 					}
 					else if ((kc >= SDLK_SPACE) && (kc < SDLK_DELETE))
 					{
+						// FIXME
+						Com_Printf("Key: %i, State: %i\n", kc, down);
+
 						Key_Event(kc, down, false);
 					}
 					else
@@ -572,6 +596,9 @@ IN_Update(void)
 						}
 						if(key != 0)
 						{
+							// FIXME
+							Com_Printf("Key: %i, State: %i\n", key, down);
+
 							Key_Event(key, down, true);
 						}
 						else
